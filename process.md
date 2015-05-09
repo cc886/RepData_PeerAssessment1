@@ -60,6 +60,8 @@ In fact, the method above is not necessary, as the question has not been so comp
 BUT... the following method is more complicated as I think....
 
 *reference*
+[extract hours and seconds from POSIXct for plotting purposes in R](http://stackoverflow.com/questions/10705328/extract-hours-and-seconds-from-posixct-for-plotting-purposes-in-r)
+[How do I plot only the time portion of a timestamp including a date?](http://stackoverflow.com/questions/7655514/how-do-i-plot-only-the-time-portion-of-a-timestamp-including-a-date)
 
 To create the FAKE time series, I translate the time shows as "1435" (means 14:35) into minutes.
 
