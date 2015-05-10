@@ -70,9 +70,19 @@ Ansewer: The `515` means that the 515 minutes of a day .Namely, on average acros
 ```{r}
 ########### Imputing missing values #######
 summary(activityData)
-
 ```
+
+Another method (more complicated)
+
+```{r}
+sum(is.na(activityData$steps))
+sum(is.na(activityData$date))
+sum(is.na(activityData$interval))
+```
+
 As is shown above, there are 2304 NA's in `step`, 0 in `date` and `interval`
+
+---
 
 **Devise to use the mean for that 5-minute interval**
 

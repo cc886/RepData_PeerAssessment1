@@ -71,6 +71,7 @@ img {
 <h2>Loading and preprocessing the data</h2>
 <pre class="r"><code>library(dplyr)
 library(ggplot2)
+unzip(&quot;activity.zip&quot;)
 activityData &lt;- read.csv(&quot;activity.csv&quot;)</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
@@ -124,7 +125,15 @@ summary(activityData)</code></pre>
 ##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
 ##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
 ##  NA's   :2304     (Other)   :15840</code></pre>
+<p>Another method (more complicated)</p>
+<pre class="r"><code>sum(is.na(activityData$steps))</code></pre>
+<pre><code>## [1] 2304</code></pre>
+<pre class="r"><code>sum(is.na(activityData$date))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(activityData$interval))</code></pre>
+<pre><code>## [1] 0</code></pre>
 <p>As is shown above, there are 2304 NA’s in <code>step</code>, 0 in <code>date</code> and <code>interval</code></p>
+<hr />
 <p><strong>Devise to use the mean for that 5-minute interval</strong></p>
 <pre class="r"><code># use minute_counts as the index .
 ac_minute &lt;- cbind(minute_counts,activityData)
