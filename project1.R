@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 ######### Loading and preprocessing the data #########
-
+unzip("activity.zip")
 activityData <- read.csv("activity.csv")
 
 #############  What is mean total number of steps taken per day? ############
@@ -85,8 +85,8 @@ ggplot(interval_mean, aes(x = minute_counts, y = mean)) + geom_line()
 # tbl_df(activityData) %>% 
 #         mutate(TS = paste(activityData$date, interval_fixed, seq = " ")) -> AC_data
 # 
-# date_CST <- strptime(AC_data$TS, "%Y-%m-%d %H%M")
-# y <- cbind(date_CST, AC_data)
+# date_CST <- 
+# y <- cbind(date_CST, AC_data)strptime(AC_data$TS, "%Y-%m-%d %H%M")
 # plot(y$date_CST, y$steps, type = "l")
 
 
@@ -193,7 +193,7 @@ ggplot(weekday_mean, aes(x = minute_counts, y = mean)) +
         facet_grid(flag ~ .) 
 
 
-
+Sys.setlocale("LC_TIME", lct)
 
 ###### APPENDIX ###########
 # ABOUT time series 

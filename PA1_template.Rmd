@@ -1,25 +1,163 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Assignment1.Rmd"
+author: "Yanshi Luo"
+date: "Tuesday, April 14, 2015"
+output: html_document
 ---
 
+```{r echo=FALSE}
+knitr::opts_chunk$set(warning=FALSE, error=FALSE)
 
-## Loading and preprocessing the data
+```
 
 
+##Loading and preprocessing the data
+
+```{r message=FALSE}
+
+library(dplyr)
+library(ggplot2)
+unzip("activity.zip")
+activityData <- read.csv("activity.csv")
+
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r}
+tbl_df(activityData) %>%
+        group_by(date) %>%
+        summarise(total = sum(steps, na.rm = T)) -> total_per_day
 
+ggplot(total_per_day) + geom_histogram(aes(x = total))
+
+## Calculate and report the mean and median of the total number of steps taken per day
+mean(total_per_day$total)
+median(total_per_day$total)
+```
 
 ## What is the average daily activity pattern?
 
+```{r}
+interval_fix <- format(activityData$interval, width = 4)
+interval_fixed <- chartr(" ", "0", interval_fix)
+time_CST <-strptime(interval_fixed, format = "%H%M")
+
+# translate the interval into seconds count.
+second_counts <- as.numeric(time_CST - trunc(time_CST, "days"))
+minute_counts <- second_counts/60
+
+# add a new column (minute_counts) and calculate the mean based on the groups seperated by `minute_count`
+cbind(minute_counts,activityData) %>%
+        group_by(minute_counts) %>%
+        summarise(mean = mean(steps, na.rm = T)) -> interval_mean
+
+ggplot(interval_mean, aes(x = minute_counts, y = mean)) + geom_line()
+```
+
+#### Q: Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r}
+max_index <- which(interval_mean$mean == max(interval_mean$mean))
+interval_mean$minute_counts[max_index]
+```
+
+Ansewer: The `515` means that the 515 minutes of a day .Namely, on average across all the days in the dataset, 8:35-8:40 contains the maximum number of steps.
 
 
 ## Imputing missing values
 
+```{r}
+########### Imputing missing values #######
+summary(activityData)
 
+```
+As is shown above, there are 2304 NA's in `step`, 0 in `date` and `interval`
+
+**Devise to use the mean for that 5-minute interval**
+
+```{r}
+
+# use minute_counts as the index .
+ac_minute <- cbind(minute_counts,activityData)
+
+merged_ac <- merge(interval_mean, ac_minute, by = "minute_counts")
+
+# Devise a strategy for filling in all of the missing values in the dataset.
+# use the mean for that 5-minute interval
+# the 17568 comes from `dim(activityData)[1]`
+for (i in 1:17568)
+{
+        if(is.na(merged_ac$steps[i]))
+        {
+                merged_ac$steps[i] <- merged_ac$mean[i]
+        }
+}
+```
+
+Make a histogram of the total number of steps taken each day
+```{r}
+
+tbl_df(merged_ac) %>%
+        group_by(date) %>%
+        summarise(total = sum(steps, na.rm = T)) -> fixed_total_per_day
+
+ggplot(fixed_total_per_day) + geom_histogram(aes(x = total))
+
+```
+
+Calculate and report the mean and median total number of steps taken per day
+
+```{r}
+mean(fixed_total_per_day$total)
+median(fixed_total_per_day$total)
+```
+#### Q: Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+Answer: Yes, they do. The impact of imputing missing data on the estimates of the total daily number of steps is that both the mean and the median increases .
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Create a new factor variable in the dataset with two levels ¨C ¡°weekday¡± and ¡°weekend¡± indicating whether a given date is a weekday or weekend day
+
+```{r results='hide'}
+# get the local time set.
+lct <- Sys.getlocale("LC_TIME");
+# set it to output in English
+Sys.setlocale("LC_TIME", "C");
+
+date_CST <- strptime(merged_ac$date, format = "%Y-%m-%d")
+weekday_ac <- cbind(merged_ac, weekday = weekdays(date_CST))
+Sys.setlocale("LC_TIME", lct);
+```
+
+```{r}
+# set a void character list
+flag <- character(17568)
+
+for (i in 1 : 17568)
+{
+        if(weekday_ac$weekday[i] == "Sunday" || weekday_ac$weekday[i] == "Saturday") 
+        {
+                flag[i] <- "weekend"
+        }
+        else
+        {
+                flag[i] <- "weekday"
+        }
+}
+
+
+cbind(weekday_ac, flag) %>%
+        group_by(minute_counts, flag) %>%
+        summarise(mean = mean(steps, na.rm = T)) -> weekday_mean
+head(weekday_mean)
+```
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+
+```{r}
+ggplot(weekday_mean, aes(x = minute_counts, y = mean)) + 
+        geom_line(aes(colour = factor(flag))) + 
+        # facet_grid was used to seperate the weekday / weekend value
+        facet_grid(flag ~ .) 
+```
