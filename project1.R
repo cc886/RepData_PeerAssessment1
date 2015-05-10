@@ -85,7 +85,7 @@ ggplot(interval_mean, aes(x = minute_counts, y = mean)) + geom_line()
 # tbl_df(activityData) %>% 
 #         mutate(TS = paste(activityData$date, interval_fixed, seq = " ")) -> AC_data
 # 
-# date_CST <- 
+# date_CST <- strptime(AC_data$TS, "%Y-%m-%d %H%M")
 # y <- cbind(date_CST, AC_data)strptime(AC_data$TS, "%Y-%m-%d %H%M")
 # plot(y$date_CST, y$steps, type = "l")
 
