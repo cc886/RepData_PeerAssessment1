@@ -24,8 +24,32 @@ No directly funcion can be used, but can be down in two steps.
 interval_fix <- format(activityData$interval, width = 4)
 
 #change " " to "0"
-interval_fixed <- chartr(" ", "0", interval_fix)
+interval_fixed <- chartr(" ", "0", interval_fix) # Following gives another way of using `gsub()`
 ```
+
+
+### Got a lot of help from deer mates !! Here is some other way to sovle the problem.
+
+```
+# Gregory D. Horne [TA]
+> variable <- 5
+> four.character <- sprintf("%04d", variable)
+> four.character
+[1] "0005"
+```
+
+```
+# José Bayoán Santiago Calderón
+
+# NOTE: cannot successfully finish the goal, but if delete the `preseve.` , it success.
+x<-formatC(x,drop0trailing=FALSE,preserve.width='How long it should be, e.g. 4')
+
+x<-gsub(' ',0,x)
+```
+
+
+
+
 
 ### strptime
 
